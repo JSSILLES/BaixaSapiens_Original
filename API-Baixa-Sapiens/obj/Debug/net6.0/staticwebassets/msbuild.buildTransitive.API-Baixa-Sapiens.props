@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\API-Baixa-Sapiens.props" />
+</Project>

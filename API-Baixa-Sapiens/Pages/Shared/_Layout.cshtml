@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/baixastyle.css" asp-append-version="true">
+    <script src="https://kit.fontawesome.com/a914087089.js" crossorigin="anonymous"></script>
+
+    @RenderSection("styles", false)
+</head>
+<body>
+    <div id="loadModal">
+        <div id="modal-container">
+            <div class="modal fade" id="modal_confirm" tabindex="-1" role="dialog" aria-labelledby="modal_confirm-title" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modal_confirm-title">Dinamic Title</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">Dinamic Description</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-white" data-dismiss="modal">Não</button>
+                            <button type="button" class="btn btn-blue confirm-action">Sim</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <link rel="shortcut icon" href="#">
+        <div id="header-container" class="container-fluid">
+            <div class="row align-items-center">
+                <!-- Usamos align-items-center para centralizar verticalmente -->
+                <!-- ICONE - FOTO USUÁRIO -->
+                <div class="col-auto"><i class="fas fa-user fa-2x"></i></div>
+                <!-- INFO PESSOAIS -->
+                <div class="col">
+                    <p class="mb-0">Bem Vindo(a)!<!--Sérgio Martins de Sousa.</i>--></p>
+                    <span class="small" id="data"></span>
+                </div>
+                <div class="col-auto custom-align-right">
+                    <!-- Mantemos o botão Sair à direita -->
+                    <!-- SAIR -->
+                    <a class="btn btn-transparent btn-exit" data-toggle="modal" data-target="#modal_confirm" data-title="Sair" data-desc="Tem certeza que deseja sair do Cidadão ANTT?" data-action="exit" data-ref="sistema" href="#">
+                        <span class="white-text">Sair</span><i class="fas fa-sign-out-alt white-text"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav id="mainNav" style="bottom: 0px;">
+        <div id="nav-container" class="container-fluid">
+            
+            <!-- MENU -->
+            <div id="navBarContent">
+                <!-- INFO HEADER -->
+                <div class="d-md-none info-header">
+                    <div class="row">
+                        <div class="col-auto"><i class="fas fa-user"></i></div>
+                        <div class="col-auto">
+                            <p class="mb-0">Bem Vindo(a)</i></p>
+                            <span class="small">terça-feira, 12 de setembro de 2023</span>
+                        </div>
+                        <div class="close-button">
+                            <button class="btn btn-transparent" data-toggle="class" data-target="#navBarContent" aria-label="close button">X</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MENU ITEMS -->
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <img src="~/LogoANTT_Cidadao_Azul.png" height="72" width="220" alt="logo do sistema">
+                        <a class="nav-link" href="#" title="Configurações">
+                            <i class="fas fa-home gray-text"></i>
+                            <span class="gray-text">Página Inicial</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- INFO FOOTER -->
+                <div class="info-footer">
+                    
+
+                    <div>
+                        <!-- <img src="./Cidadão ANTT - 2020.8.21.1_files/LogoSUTEC_Cor.png" alt="logo getin">-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- MAIN -->
+    <main id="main">
+        <div class="main-container">
+            
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- MAIN -->
+                    <div class="col-lg main-container">
+                        <!-- PRESENTATION -->
+                        <div class="card show" id="presentation-desc">
+                            <div class="card-header">
+                                <h2>Cidadão ANTT</h2>
+                            </div>
+                            <div class="container">
+                                <main role="main" class="pb-1 center-main">
+                                    @RenderBody()
+                                </main>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    @await RenderSectionAsync("Scripts", required: false)
+    <!-- FOOTER -->
+    <footer>
+        <div id="footer-container" class="container-fluid">
+            <div class="row">
+                <div class="col-lg">
+                </div>
+                <div class="col-lg-auto ml-auto">
+                    <img src="~/logo-antt.png" />
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
+<script>
+    
+    function obterDataFormatada() {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const dataAtual = new Date();
+        return dataAtual.toLocaleDateString('pt-BR', options);
+    }
+
+    
+    function atualizarData() {
+        const elementoData = document.getElementById('data');
+        if (elementoData) {
+            elementoData.textContent = obterDataFormatada();
+        }
+    }
+
+   
+    atualizarData();
+
+    
+    setInterval(atualizarData, 60000); 
+</script>

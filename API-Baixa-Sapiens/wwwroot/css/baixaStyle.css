@@ -1,0 +1,90 @@
+﻿header {
+    background-color: #0B476D;
+    color: #fff;
+    padding: 8px;
+    height: 60px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+}
+
+
+#mainNav {
+    background-color: #fff; 
+    color: #333; 
+    position: fixed;
+    left: 0; 
+    top: 0;
+    bottom: 0;
+    width: 250px; 
+    z-index: 1;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+
+#navBarContent {
+    margin-top: 40px; 
+    padding-top: 20px;
+}
+
+
+footer {
+    background-color: #f5f5f5;
+    background-image: url('~/logo-antt.png'); 
+    background-size: cover;
+    padding: 20px;
+    color: #333; 
+    position: fixed; 
+    bottom: 0; 
+    width: 100%; 
+}
+.custom-align-right {
+    text-align: right;
+    color: white;
+    
+    
+}
+.white-text {
+    color: white !important;
+}
+
+.gray-text {
+    color: #838383 !important;
+}
+
+.center-main {
+    display: flex;
+    justify-content: center;
+}
+
+main[role="main"] {
+    font-size: 80%;
+}
+
+.viewBaixa input[type="file"],
+.viewBaixa input[type="text"],
+.viewBaixa select,
+.viewBaixa button {
+    background-color: #0B476D;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 5px;
+}
+
+.viewBaixa .btn {
+    background-color: #0B476D;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 5px;
+}
+
+    .viewBaixa .btn:hover {
+        background-color: #084164;
+        cursor: pointer;
+    }

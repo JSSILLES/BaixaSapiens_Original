@@ -1,0 +1,264 @@
+﻿@page
+@model IndexModel
+
+<script src="https://kit.fontawesome.com/a914087089.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="~/css/baixaStyle.css" asp-append-version="true">
+
+<div class="viewBaixa">
+    <div class="formUpload">
+        <br />
+        <form id="uploadForm" enctype="multipart/form-data" asp-page-handler="Upload">
+            <input type="file" name="file" id="fileInput" />
+            <br /> <br /> <br />
+            <button type="submit" id="carregarPlanilhaButton">
+                <i class="fas fa-spinner fa-spin" style="display: none;"></i> Carregar Planilha
+            </button>
+        </form>
+    </div>
+
+    <div id="downloadLink" style="display: none;">
+        <h4>Planilha Carregada!</h4>
+
+        <button id="executarTesteConexao" disabled>
+            <i class="fas fa-spinner fa-spin" style="display: none;"></i> Verificar Autos
+        </button>
+    </div>
+
+    <div id="resultTableContainer" style="display: none;">
+        <h4>Resultado da Consulta:</h4>
+        <table id="resultTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Situação</th>
+                    <th>ID Planilha</th>
+                    <th>CPF/CNPJ</th>
+                    <th>Número do Auto</th>
+                    <th>Data Pagamento</th>
+                    <th>Valor Pagamento</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="acaoContainer" style="display: none;">
+        <label for="acao">Selecione a ação:</label>
+        <br />
+        <select id="acao">
+            <option value="baixaSimples">Executar Baixa Simples</option>
+            <option value="baixaParcelamento" selected>Executar Baixa Parcelamento</option>
+        </select>
+    </div>
+
+    <button id="executarScript" style="display: none;">
+        <i class="fas fa-spinner fa-spin" style="display: none;"></i> Executar Baixa Simples
+    </button>
+
+    <button id="executarScriptParc" style="display: none;">
+        <i class="fas fa-spinner fa-spin" style="display: none;"></i> Executar Baixa Parcelamento
+    </button>
+
+    <div id="scriptResultTableContainer" style="display: none;">
+        <table id="scriptResultTable" class="table">
+            <thead>
+                <tr>
+                    <th>Situação</th>
+                    <th>ID Planilha</th>
+                    <th>CPF/CNPJ</th>
+                    <th>Número do Auto</th>
+                    <th>Data Pagamento</th>
+                    <th>Valor Pagamento</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="scriptResultTableContainerParc" style="display: none;">
+        <table id="scriptResultTableParc" class="table">
+            <thead>
+                <tr>
+                    <th>Situação</th>
+                    <th>ID Planilha</th>
+                    <th>CPF/CNPJ</th>
+                    <th>Número do Auto</th>
+                    <th>Data Pagamento</th>
+                    <th>Valor Pagamento</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#uploadForm').submit(function (e) {
+                e.preventDefault();
+
+                var formData = new FormData();
+                formData.append('file', $('#fileInput')[0].files[0]);
+                var carregarPlanilhaButton = $('#carregarPlanilhaButton');
+                var spinner = carregarPlanilhaButton.find('i.fa-spinner');
+
+                spinner.show();
+
+                $.ajax({
+                    url: '/api/excel/ConvertToSql',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        alert('Planilha carregada com sucesso!:');
+                        $('#downloadLink').show();
+                        $('#executarTesteConexao').prop('disabled', false);
+                        spinner.hide();
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Ocorreu um erro ao converter o arquivo: ' + xhr.responseText);
+                        spinner.hide();
+                    }
+                });
+            });
+
+            $('#acao').change(function () {
+                var selectedOption = $(this).val();
+                $('#executarScript, #executarScriptParc').hide();
+
+                if (selectedOption === 'baixaSimples') {
+                    $('#executarScript').show();
+                } else if (selectedOption === 'baixaParcelamento') {
+                    $('#executarScriptParc').show();
+                }
+            });
+
+            $('#executarScript, #executarScriptParc').click(function () {
+                var selectedOption = $('#acao').val();
+                $('#acao').prop('disabled', true);
+                // Resto do código de execução aqui
+            });
+
+            $('#executarTesteConexao').click(function () {
+                var executarTesteConexaoButton = $(this);
+                var spinner = executarTesteConexaoButton.find('i.fa-spinner');
+
+                spinner.show();
+
+                $.ajax({
+                    url: '/api/excel/ExecuteConsulta',
+                    type: 'GET',
+                    success: function (data) {
+                        console.log(data); // Adicione este log para depurar os dados
+                        $('#resultTable tbody').empty();
+
+                        if (data && data.length > 0) {
+                            $('#resultTableContainer').show();
+                            $.each(data, function (index, item) {
+                                var row = $('<tr>');
+                                row.append($('<td>').text(item.EXISTE_ARRECADAÇÃO));
+                                row.append($('<td>').text(item.ID));
+                                row.append($('<td>').text(item.CPF_CNPJ));
+                                row.append($('<td>').text(item.NR_AUTO_INFRACAO));
+                                row.append($('<td>').text(item.DT_PAGAMENTO));
+                                row.append($('<td>').text(item.VL_PAGAMENTO));
+                                $('#resultTable tbody').append(row);
+                            });
+                        } else {
+                            alert('Nenhum resultado encontrado.');
+                        }
+                        $('#acaoContainer').show();
+                        spinner.hide();
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Ocorreu um erro ao executar o teste de conexão: ' + xhr.responseText);
+                        spinner.hide();
+                    }
+                });
+            });
+
+            $('#executarScript').click(function () {
+                var executarScriptButton = $(this);
+                var spinner = executarScriptButton.find('i.fa-spinner');
+
+                spinner.show();
+
+                $.ajax({
+                    url: '/api/excel/ExecuteScript',
+                    type: 'GET',
+                    success: function (data) {
+                        console.log(data); // Adicione este log para depurar os dados
+                        $('#scriptResultTable tbody').empty();
+
+                        if (data && data.length > 0) {
+                            $('#scriptResultTableContainer').show();
+                            $.each(data, function (index, item) {
+                                var row = $('<tr>');
+                                row.append($('<td>').text(item.EXISTE_ARRECADAÇÃO));
+                                row.append($('<td>').text(item.ID));
+                                row.append($('<td>').text(item.CPF_CNPJ));
+                                row.append($('<td>').text(item.NR_AUTO_INFRACAO));
+                                row.append($('<td>').text(item.DT_PAGAMENTO));
+                                row.append($('<td>').text(item.VL_PAGAMENTO));
+                                $('#scriptResultTable tbody').append(row);
+                            });
+
+                            
+                        } else {
+                            alert('Nenhum resultado encontrado.');
+                        }
+                        spinner.hide();
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Ocorreu um erro ao executar o script: ' + xhr.responseText);
+                        spinner.hide();
+                    }
+                });
+            });
+
+            $('#executarScriptParc').click(function () {
+                var executarScriptParcButton = $(this);
+                var spinner = executarScriptParcButton.find('i.fa-spinner');
+
+                spinner.show();
+
+                $.ajax({
+                    url: '/api/excel/ExecuteScriptParc',
+                    type: 'GET',
+                    success: function (data) {
+                        console.log(data); // Adicione este log para depurar os dados
+                        $('#scriptResultTableParc tbody').empty();
+
+                        if (data && data.length > 0) {
+                            $('#scriptResultTableContainerParc').show();
+                            $.each(data, function (index, item) {
+                                var row = $('<tr>');
+                                row.append($('<td>').text(item.EXISTE_ARRECADAÇÃO));
+                                row.append($('<td>').text(item.ID));
+                                row.append($('<td>').text(item.CPF_CNPJ));
+                                row.append($('<td>').text(item.NR_AUTO_INFRACAO));
+                                row.append($('<td>').text(item.DT_PAGAMENTO));
+                                row.append($('<td>').text(item.VL_PAGAMENTO));
+                                $('#scriptResultTableParc tbody').append(row);
+                            });
+                            
+                        } else {
+                            alert('Nenhum resultado encontrado.');
+                        }
+                        spinner.hide();
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Ocorreu um erro ao executar o script: ' + xhr.responseText);
+                        spinner.hide();
+                    }
+                });
+            });
+
+    });
+    </script>
+}
